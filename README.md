@@ -25,9 +25,10 @@ Console](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
 using your XSEDE/ACCESS IAM User account.
 
 In the "Search for services" box at the top of the page, enter
-"CloudFormation".
+"[CloudFormation](https://us-east-2.console.aws.amazon.com/cloudformation/home?region=us-east-2)".
 
-On the "Stack" page, look for stacks named "access-idp-N". (You can toggle
+On the "[Stacks](https://us-east-2.console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks)"
+page, look for stacks named "access-idp-N". (You can toggle
 the "View nested" setting to view the root stacks and their child stacks.)
 
 Select one of the links below to create a new stack with an **unused**
@@ -37,6 +38,9 @@ stack number.
 * [access-idp-2](https://us-east-2.console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/quickcreate?templateUrl=https%3A%2F%2Faccess-idp-templates.s3.us-east-2.amazonaws.com%2Faccess-ci-aws-shibboleth-idp.yaml&stackName=access-idp-2)
 * [access-idp-3](https://us-east-2.console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/quickcreate?templateUrl=https%3A%2F%2Faccess-idp-templates.s3.us-east-2.amazonaws.com%2Faccess-ci-aws-shibboleth-idp.yaml&stackName=access-idp-3)
 * [access-idp-4](https://us-east-2.console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/quickcreate?templateUrl=https%3A%2F%2Faccess-idp-templates.s3.us-east-2.amazonaws.com%2Faccess-ci-aws-shibboleth-idp.yaml&stackName=access-idp-4)
+
+On the "Quick create stack" page, scroll to the bottom and check the two checkboxes
+in the "Capabilities" section, then click the "Create Stack" button.
 
 The CloudFormation stack consists of 6 stacks: the root "access-idp-N"
 stack and 5 stacks for Cluster, DeploymentPipeline, LoadBalancer, Service,
@@ -70,12 +74,14 @@ Console](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
 using your XSEDE/ACCESS IAM User account.
 
 In the "Search for services" box at the top of the page, enter
-"Elastic Container Service" or "ECS".
+"[Elastic Container
+Service](https://us-east-2.console.aws.amazon.com/ecs/home?region=us-east-2)" or
+"ECS".
 
-In the main "Cluster" window,
-click on the cluster that was created (e.g., "access-idp-1"). Then click on
+In the main "Clusters" window,
+click on the cluster that was created (e.g., `access-idp-1`). Then click on
 the Service under the "Service Name" column (e.g., 
-"access-idp-1-Service-JGWEIBGIJEI-FargateService").  Click the "Update"
+`access-idp-1-Service-JGWEIBGIJEI-FargateService`).  Click the "Update"
 button. Change the "Number of tasks" to 1, then click the "Skip to review"
 button. Finally, click the "Update Service" button. Back on the Cluster
 page, you should see that the "Desired tasks" column shows "1". Eventually,
@@ -84,11 +90,11 @@ the "Running tasks" column will also show "1".
 ## Test the Newly Deployed Stack
 
 When you install a new stack for the service, you should test to verify that
-things are still working correctly. Testing idp.access-ci.org on a given
-CloudFormation stack is possible since all interaction with the IdP is
-initiated by the client (e.g., the user's browser). So to test a specific
-instance, you simply need to add an entry in your local `/etc/hosts` file
-which points to the stack you want to use.
+things are still working correctly before putting the new service in production.
+Testing idp.access-ci.org on a given CloudFormation stack is possible since all
+interaction with the IdP is initiated by the client (e.g., the user's browser). So
+to test a specific instance, you simply need to add an entry in your local
+`/etc/hosts` file which points to the stack you want to use.
 
 ### Find the Load Balancer DNS Name
 
@@ -97,11 +103,11 @@ Console](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
 using your XSEDE/ACCESS IAM User account.
 
 In the "Search for services" box at the top of the page, enter
-"CloudFormation".
+"[CloudFormation](https://us-east-2.console.aws.amazon.com/cloudformation/home?region=us-east-2)".
 
 Locate the root CloudFormation stack that was deployed and click on it.
-(Note that there are nested stacks, but we are looking for the root stack
-named "access-idp-1".) Under the Outputs tab, locate the LoadBalancerDNSName
+Note that there are nested stacks, but we are looking for the root stack
+named `access-idp-1`. Under the "Outputs" tab, locate the "LoadBalancerDNSName"
 entry. Then find the IP address associated with this DNS name using a
 command like `host` or `dig`. Example:
 
@@ -123,7 +129,7 @@ you are finished testing.
 
 ### Test ECP Login
 
-You must text ECP (command line) access in order to verify Duo MFA works
+You must test ECP (command line) access in order to verify Duo MFA works
 with both ECP and web-based clients. ECP testing is performed with the
 https://cilogon.org/ecp.pl script. Example:
 
@@ -143,7 +149,7 @@ openssl x509 -noout -subject -issuer -enddate -in "/tmp/x509up_u${UID}"
 ### Test Web Login
 
 Go to https://cilogon.org/testidp/ (preferrably using a single
-Private/Incognito browser window) and select "ACCESS". Log in with your
+Private/Incognito browser window) and select "ACCESS CI". Log in with your
 ACCESS Kerberos username and password, and verify that you got all of the
 User Attributes you expect. 
 
@@ -175,18 +181,19 @@ Console](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
 using your XSEDE/ACCESS IAM User account.
 
 In the "Search for services" box at the top of the page, enter
-"Route 53".
+"[Route 53](https://us-east-1.console.aws.amazon.com/route53)".
 
 In the left column, click "Hosted zones". In the main window, click
 on the "dyn-access-ci.org" Domain name.
 
-Check the box for "idp.dyn-access-ci.org". In the right column, click the
+Check the checkbox next to "idp.dyn-access-ci.org". In the right column, click the
 "Edit record" button.
 
 In the right column, click the "X" next to "dualstack.access-ci-loadb-..."
 to get a list of available load balancer DNS names. Select the load
 balancer corresponding to the DNS name you found earlier (which didn't
-have" dualstack" prepended). Then click the "Save" button.
+have "dualstack" prepended). Then click the "Save" button. It can take a few
+minutes for DNS to propagate to your local machine.
 
 ## Delete the Previous CloudFormation Stack
 
@@ -201,13 +208,14 @@ failures. When a sub-stack delete fails, navigate to the stack's
 opens a new tab/window for the associated S3 bucket. Check the checkbox
 for the offending file/resource, and click Delete. Then try deleting the
 top-level CloudFormation stack again. It may require a few tries to
-completely delete all of the dynamically created files. In particular the
-following stack resources require manual deletion.
+completely delete all of the dynamically created files.
+
+In particular the following stack resources typically require manual deletion.
 
 * DeploymentPipeline
   * Resources:
     * [ArtifactBucket](https://console.aws.amazon.com/s3/home)
-    * [ECRRepo](https://us-east-2.console.aws.amazon.com/ecr/repositories/)
+    * [ECRRepo](https://us-east-2.console.aws.amazon.com/ecr/repositories/?region=us-east-2)
 
 ---
 
@@ -220,7 +228,9 @@ steps:
 1. Get the list of [currently installed CloudFormation
    stacks](https://us-east-2.console.aws.amazon.com/cloudformation/home#/)
    named "access-idp-N".
-2. Install a new CloudFormation stack with an unused number.
+2. Install a new
+   [CloudFormation](https://us-east-2.console.aws.amazon.com/cloudformation/home?region=us-east-2)
+   stack with an unused number.
 3. Increase the number of running instances to '1'.
 4. Test the new stack for both ECP and web browser.
 5. Increase the number of running instances to '2'.
@@ -231,7 +241,7 @@ steps:
 
 # Maintenance
 
-## Logs
+## View Logs
 
 The build pipeline and Shibboleth IdP software use CloudWatch for logging.
 
@@ -240,14 +250,14 @@ Console](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
 using your XSEDE/ACCESS IAM User account.
 
 In the "Search for services" box at the top of the page, enter
-"CloudWatch".
+"[CloudWatch](https://us-east-2.console.aws.amazon.com/cloudwatch/home?region=us-east-2)".
 
 In the left column, select "Log groups".
 
 There are two logs associated with the deployment:
 
-* /aws/codebuild/access-idp-N - Logs for building the Dockerfile
-* /ecs/access-idp-N - Logs for the Shibboleth IdP Tomcat process (e.g.,
+* `/aws/codebuild/access-idp-N` - Logs for building the Dockerfile
+* `/ecs/access-idp-N` - Logs for the Shibboleth IdP Tomcat process (e.g.,
   ACCESS user logins)
 
 ## Restart the Service
@@ -257,12 +267,14 @@ Console](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
 using your XSEDE/ACCESS IAM User account.
 
 In the "Search for services" box at the top of the page, enter
-"Elastic Container Service" or "ECS".
+"[Elastic Container
+Service](https://us-east-2.console.aws.amazon.com/ecs/home?region=us-east-2)" or
+"ECS".
 
 In the main "Cluster" window,
-click on the cluster that was created (e.g., "access-idp-1"). Then click on
+click on the cluster that was created (e.g., `access-idp-1`). Then click on
 the Service under the "Service Name" column (e.g., 
-"access-idp-1-Service-JGWEIBGIJEI-FargateService").  Click the "Update"
+`access-idp-1-Service-JGWEIBGIJEI-FargateService`).  Click the "Update"
 button. 
 
 You now have two options.
@@ -273,33 +285,35 @@ You now have two options.
    was shown before. Eventually, the "Running tasks" column will also show
    that number. Then, repeat the process, only this time halve the "Number
    of tasks". ECS will stop the oldest tasks leaving you with just the
-   newer tasks.  **-- OR --**
+   newer tasks. \
+   **-- OR --**
 2. Check the "Force new deployment" checkbox, then click the "Skip to
    review" button. Then, click the "Update service" button. It will take
    several minutes to restart all of the tasks.
 
 ## Update the InCommon SSL Cert
 
-Since the TLS/SSl certificate from InCommon is good for just over a year,
+Since the TLS/SSL certificate from InCommon is good for just over a year,
 it will need to be updated periodically. In the [Initial
 Setup](#initial-setup) instructions below, the first certificate was
 requested with the "Enable Auto-Renewal" setting.  When the current
 certificate is about to expire, Certificate Services Manager will send an
 email to the requesters with a link to a new certificate. Use the
-instructions below to select the correct download links for the new
-certificate and intermediate certificate chain. Be sure to delete the last
-(root) certificate from the intermediate certificate file. Note that you
-will also need the `idp_access-ci_org.key` file you generated before.
+instructions [below](#obtain-a-new-incommon-ssl-cert-for-https) to select the
+correct download links for the new certificate and intermediate certificate chain.
+Be sure to delete the last (root) certificate from the intermediate certificate
+file. Note that you will also need the `idp_access-ci_org.key` file you generated
+before.
 
 Log in to the [AWS
 Console](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
 using your XSEDE/ACCESS IAM User account.
 
-In the "Search for services" box at the top of the page, enter "Certificate
-Manager".
+In the "Search for services" box at the top of the page, enter "[Certificate
+Manager](https://us-east-2.console.aws.amazon.com/acm/home?region=us-east-2)".
 
 On the Certificates page, click on the Certificate ID corresponding to the
-idp.access-ci.org Domain name, then click "Reimport".
+idp.access-ci.org Domain name, then click the "Reimport" button.
 
 Paste the contents of three files into the text boxes.
 
@@ -313,8 +327,8 @@ For tags, ensure key="WBS" value="ACCESS CONECT 1.4", then click "Next", then
 click "Import".
 
 Note that the ARN (AWS Registration Number) for the
-new idp.access-ci.org certificate remains unchanged, but the service must be
-restarted in order to pick up the new SSL certificate. 
+new TLS/SSL certificate remains unchanged, but the service must be
+[restarted](#restart-the-service) in order to pick up the new SSL certificate. 
 
 ---
 
@@ -323,7 +337,7 @@ restarted in order to pick up the new SSL certificate.
 The Shibboleth Identity Provider (IdP) software relies on several
 credentials for functionality. These credentials are generated locally and
 then uploaded to the AWS Secrets Manager, where they are used by the
-deployed IdP. The following configuration steps are done before the
+deployed IdP. The following configuration steps are done *before* the
 IdP is deployed.
 
 
@@ -360,7 +374,8 @@ Log in to the [AWS
 Console](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
 using your XSEDE/ACCESS IAM User account.
 
-In the "Search for services" box at the top of the page, enter "IAM". In the
+In the "Search for services" box at the top of the page, enter
+"[IAM](https://us-east-1.console.aws.amazon.com/iamv2)". In the
 right pane, click "Users". 
 
 On the "Users" page, scroll until you find your name.
@@ -368,15 +383,14 @@ You may need to use the `<` / `>` page arrow buttons to see more users
 than fit on the current page. Click on your User name.
 
 On the "Summary" page, click on the "Security credentials" tab. Under "Access
-keys", click "Create access key". Record the "Access key ID" and the
-"Secret access key". Click the "Show" link to view your "Secret access
-key". **IMPORTANT**: the secret is only shown once, so record it in
-a safe location.
+keys", click "Create access key". Click the "Show" link to view your "Secret access
+key".  Record the "Access key ID" and the "Secret access key". **IMPORTANT**: the
+secret is only shown once, so record it in a safe location.
 
 Then run `aws configure` using the values above when prompted. Example:
 
 ```
-aws configure
+# aws configure
 AWS Access Key ID [None]: ABCDEFGHIJKLMNOPQRST
 AWS Secret Access Key [None]: abcdefghijklmnopqrstuvwxyz01234567891011
 Default region name [None]: us-east-2
@@ -391,12 +405,15 @@ to easily swap between accounts.
 ## (Optional) Install Session Manager Plugin
 
 If you need to log in to the running IdP instance for debugging (like
-`docker exec -it ...`), you first need to install the [AWS CLI Session
+`docker exec -it ... /bin/sh`), you first need to install the [AWS CLI Session
 Manager Plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html). 
 
 But this is just the client-side configuration. Changes also need to be made
-server-side to enable [ECS Exec](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-exec.html). For example, changes need to be made to
-the [access-ci-service.yaml](https://s3.console.aws.amazon.com/s3/object/access-idp-templates?region=us-east-2&prefix=access-ci-service.yaml) file, e.g.:
+server-side to enable [ECS
+Exec](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-exec.html).
+For example, the
+[access-ci-service.yaml](https://s3.console.aws.amazon.com/s3/object/access-idp-templates?region=us-east-2&prefix=access-ci-service.yaml)
+file must be updated to include the `EnableExecuteCommand` property:
 
 ```
   FargateService:
@@ -474,8 +491,8 @@ curl -o 'idp_access-ci_org.crt' 'https://cert-manager.com/customer/InCommon/ssl?
 curl -o 'intermediate.crt' 'https://cert-manager.com/customer/InCommon/ssl?action=download&sslId=2026192&format=x509IOR'
 ```
 
-3. Edit intermediate.crt to remove the last certificate in the file
-(including the -----BEGIN Certificate----- and -----END CERTIFICATE-----
+3. Edit `intermediate.crt` to remove the last certificate in the file
+(including the `-----BEGIN CERTIFICATE-----` and `-----END CERTIFICATE-----`
 lines) since it is a root CA already present in web browers.
 
 ## Upload New InCommon SSL Cert to AWS Certificate Manager
@@ -486,8 +503,8 @@ Log in to the [AWS
 Console](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
 using your XSEDE/ACCESS IAM User account.
 
-In the "Search for services" box at the top of the page, enter "Certificate
-Manager".
+In the "Search for services" box at the top of the page, enter "[Certificate
+Manager](https://us-east-2.console.aws.amazon.com/acm/home?region=us-east-2)".
 
 On the Certificates page, click the "Import" button.
 
@@ -500,7 +517,7 @@ Paste the contents of three files into the text boxes.
 Then click "Next".
 
 For tags, enter key="WBS" value="ACCESS CONECT 1.4", then click "Next", then
-click "Review and import", the click "Import".
+click "Review and import", then click "Import".
 
 On the Certificates page, click the Certificate ID corresponding to the
 idp.access-ci.org Domain name.
@@ -590,7 +607,7 @@ need to extract it to a PEM-formatted file.
 
 ```
 openssl pkcs12 -info -in idp-backchannel.p12 -nodes -nocerts | tee idp-backchannel.key
-# Enter PASSWORD1 from above
+### Enter PASSWORD1 from above
 ```
 
 ## Upload IdP Certs and Keys to AWS Secrets Manager
@@ -660,7 +677,7 @@ a keytab file.
 Send email to help@xsede.org asking for
 keytab file for service principal `HTTP/idp.access-ci.org@TERRAGRID.ORG`.
 You should get `kadmin` access to the KDC server. Then generate a local
-keytab file from a machine with NCSA kadmin access:
+keytab file on a machine with NCSA kadmin access:
 
 ```
 kadmin -r TERAGRID.ORG -s kadmin.teragrid.org -p username@TERAGRID.ORG
@@ -734,7 +751,7 @@ Record the resulting secrets/keys in a text file `ACCESS-Duo.txt`. (Note
 that the values below are not the actual keys.)
 
 ```
-idp.access-ci.org (shibboleth)
+idp.access-ci.org (Shibboleth)
 browser_app_key = abcdefghijklmnopqrstuvwxyz01234567890101
 browser_int_key = DEFGHIJKLMNOPQRSTUVW
 browser_sec_key = xyz0123456789101abcdefghijklmnopqrstuvwx
@@ -809,7 +826,7 @@ Log in to the [AWS
 Console](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
 using your XSEDE/ACCESS IAM User account.
 
-In the "Search for services" box at the top of the page, enter "S3".
+In the "Search for services" box at the top of the page, enter "[S3](https://s3.console.aws.amazon.com/s3/home?region=us-east-2)".
 
 On the "Buckets" page, click "Create bucket".
 
@@ -833,6 +850,11 @@ Release page](https://spaces.at.internet2.edu/login?target=%2Fpages%2Fviewpage.a
 using your University IdP, and click the "(Eye) Watch" icon at the top
 right of the page. You will get emails when anything on that page is
 updated. The Shibboleth IdP Docker Container is the package to monitor.
+
+To be informed of updates to the [Shibboleth IdP
+software](https://shibboleth.atlassian.net/wiki/x/CgFwSw) and related plugins, sign
+up for the [Shibboleth Announce](https://shibboleth.net/mailman/listinfo/announce)
+mailing list.
 
 ---
 
@@ -987,7 +1009,7 @@ echo "dualstack.${dnsname}" | tr '[:upper:]' '[:lower:]'
 During the CloudFormation stack creation, a new CodeCommit repository was
 created. The repo has the configuration files used by the Shibboleth IdP
 (i.e., code.zip). If you want to make immediate, short-term changes to
-configuration (i.e., for testing purposes), you can clone the repository,
+configuration (e.g., for testing purposes), you can clone the repository,
 make changes, and push the changes to the repo. This will trigger a new
 Deployment Pipeline build/deploy.
 
@@ -995,7 +1017,8 @@ To clone the repo, log in to the [AWS
 Console](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
 using your XSEDE/ACCESS IAM User account.
 
-In the "Search for services" box at the top of the page, enter "IAM". In the
+In the "Search for services" box at the top of the page, enter
+"[IAM](https://us-east-1.console.aws.amazon.com/iamv2)". In the
 right pane, click "Users". 
 
 On the "Users" page, scroll until you find your name.
@@ -1011,7 +1034,7 @@ user name and password are used for [HTTPS git operations with
 CodeCommit](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_ssh-keys.html#git-credentials-code-commit). 
 
 In the "Search for services" box at the top of the page, enter
-"CodeCommit".
+"[CodeCommit](https://us-east-2.console.aws.amazon.com/codesuite/codecommit/home?region=us-east-2)".
 
 In the repository list page, click the "HTTPS" link for the
 "access-idp-1" repo, which will be used for a `git clone URL` operation.
@@ -1035,7 +1058,7 @@ export STACK_NAME=access-idp-1
 
 cd "${STACK_NAME}"
 echo >> Dockerfile
-git commit -am "Trigger service restart"
+git commit -am "Trigger service re-build/deploy"
 git push -u origin main
 ```
 
