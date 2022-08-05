@@ -943,6 +943,21 @@ aws secretsmanager list-secrets |
     sed -e 's/^"//' -e 's/"$//'
 ```
 
+### Update an Existing Secret Value
+
+Example update of the existing XDCDB API\_KEY:
+```
+export SECRET_ARN=`aws secretsmanager list-secrets |
+       jq '.SecretList[] |
+       select (.Name | test ("^idp-access-ci-org-api-key")) |
+       .ARN' |
+       sed -e 's/^"//' -e 's/"$//'`
+export API_KEY=<NEW XDCDB API-KEY>
+aws secretsmanager update-secret \
+    --secret-id "${SECRET_ARN}" \
+    --secret-string '{"key":"'"${API_KEY}"'"}'
+```
+
 ### List Existing CloudFormation Stacks
 
 ```
