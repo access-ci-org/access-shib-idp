@@ -234,8 +234,9 @@ steps:
 3. Increase the number of running instances to '1'.
 4. Test the new stack for both ECP and web browser.
 5. Increase the number of running instances to '2'.
-6. Update DNS to point to the new stack.
-7. Delete the previous CloudFormation stack.
+6. Test the stack again to make sure ECP works with both instances.
+7. Update DNS to point to the new stack.
+8. Delete the previous CloudFormation stack.
 
 ---
 
@@ -445,7 +446,8 @@ openssl req \
 
 **IMPORTANT**: Be sure to save the newly generated `idp_access-ci_org.key`
 file someplace safe. This file will be needed again for certificate
-renewal in one year.
+renewal in one year. The key is available in the NCSA shared LastPass folder
+"Shared-security-certauth" in the "ACCESS IDP SSL cert private key" note.
 
 Log in to the [InCommon Certificate Manager](https://cert-manager.com/customer/InCommon). (If you do not have access to
 the InCommon Certificate Manager, send the resulting
@@ -535,13 +537,15 @@ site](https://a3mdev.xsede.org/xdcdb-api-test-new/) and click [Generate
 APIKEY](https://a3mdev.xsede.org/xdcdb-api-test-new/api/api_key). This will
 generate two new values `API-KEY` and an associated `HASH`. Record the
 `API-KEY` for use below, and follow the instructions on the page to send the
-`HASH` to help@xsede.org. The "agent" is "userinfo", and the "resource" is
-"idp.access-ci.org". Example email:
+`HASH` to [ACCESS
+Support](https://support.access-ci.org/user/login?destination=/open-a-ticket).
+The "agent" is "ACCESSIDP", and the "resource" is "idp.access-ci.org".
+Example email:
 
 ```
-Subject: XDCDB API-KEY installation request
+Subject: ACCESS-API Hash Installation Request
 
-Please install the following HASH for agent "userinfo" for
+Please install the following HASH for agent "ACCESSIDP" for
 resource/hostname "idp.access-ci.org":
 
     $2a$10$PNCCWKj7QAOrHhZuSfyEPun5.eidIz3EnWMx0MwaehJ/zaeMz9152
@@ -674,10 +678,12 @@ aws secretsmanager create-secret \
 The IdP is configured to authenticate users using Kerberos. For this, we need
 a keytab file. 
 
-Send email to help@xsede.org asking for
-keytab file for service principal `HTTP/idp.access-ci.org@TERRAGRID.ORG`.
-You should get `kadmin` access to the KDC server. Then generate a local
-keytab file on a machine with NCSA kadmin access:
+Submit a request at [ACCESS
+Support](https://support.access-ci.org/user/login?destination=/open-a-ticket)
+asking for a keytab file for service principal
+`HTTP/idp.access-ci.org@TERRAGRID.ORG`.  You should get `kadmin` access to
+the KDC server. Then generate a local keytab file on a machine with NCSA
+kadmin access:
 
 ```
 kadmin -r TERAGRID.ORG -s kadmin.teragrid.org -p username@TERAGRID.ORG
@@ -715,12 +721,14 @@ This will be used as the default value in the
 The IdP uses Duo as a second authentication factor. Several new
 Duo "Applications" must be created and the resulting keys uploaded to AWS.
 
-Send email to help@xsede.org asking for 3 new Duo Applications:
+Submit a request at [ACCESS
+Support](https://support.access-ci.org/user/login?destination=/open-a-ticket)
+asking for 3 new Duo Applications:
 
 ```
 Application 1
 Type: Shibboleth
-Name: idp.access-ci.org
+Name: idp.access-ci.org Shib
 
 Application  2
 Type: Auth API
@@ -728,7 +736,7 @@ Name: idp.access-ci.org ECP
 
 Application 3
 Type: Web SDK
-Name idp.access-ci.org OIDC
+Name idp.access-ci.org
 ```
 
 These should be configured similarly to the existing idp.xsede.org
@@ -751,7 +759,7 @@ Record the resulting secrets/keys in a text file `ACCESS-Duo.txt`. (Note
 that the values below are not the actual keys.)
 
 ```
-idp.access-ci.org (Shibboleth)
+idp.access-ci.org Shib (Shibboleth)
 browser_app_key = abcdefghijklmnopqrstuvwxyz01234567890101
 browser_int_key = DEFGHIJKLMNOPQRSTUVW
 browser_sec_key = xyz0123456789101abcdefghijklmnopqrstuvwx
@@ -763,7 +771,7 @@ ecp_int_key = EFGHIJKLMNOPQRSTUVWX
 ecp_sec_key = 7890101abcdefghijklmnopqrstuvwxyz0123456
 ecp_api_host = api-12345678.duosecurity.com
 
-idp.access-ci.org OIDC (Web SDK)
+idp.access-ci.org (Web SDK)
 oidc_int_key = FGHIJKLMNOPQRSTUVWXY
 oidc_sec_key = pqrstuvwxyz0123456789010abcdefghijklmnop
 oidc_api_host = api-12345678.duosecurity.com
@@ -1023,7 +1031,7 @@ echo "dualstack.${dnsname}" | tr '[:upper:]' '[:lower:]'
 
 During the CloudFormation stack creation, a new CodeCommit repository was
 created. The repo has the configuration files used by the Shibboleth IdP
-(i.e., code.zip). If you want to make immediate, short-term changes to
+(i.e., `code.zip`). If you want to make immediate, short-term changes to
 configuration (e.g., for testing purposes), you can clone the repository,
 make changes, and push the changes to the repo. This will trigger a new
 Deployment Pipeline build/deploy.
@@ -1083,6 +1091,6 @@ page corresponding to `access-idp-1`.
 
 **NOTE**: changes made to the CodeCommit repo affect only the currently
 running instance. If you want to make longer-term changes, update the
-configuration files in the code.zip file and deploy a new instance of the
+configuration files in the `code.zip` file and deploy a new instance of the
 CloudFormation stack.
 
