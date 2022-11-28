@@ -197,6 +197,10 @@ minutes for DNS to propagate to your local machine.
 
 ## Delete the Previous CloudFormation Stack
 
+**NOTE:** Since DNS clients might be (mis)configured to update the DNS record
+for idp.access-ci.org less frequently than asserted by Route 53, it is prudent
+to wait at least an hour before deleting the previous CloudFormation stack.
+
 After you have verified that DNS has been updated, you can delete the
 previous CloudFormation stack to free up AWS resources (and thus decrease
 the monthly bill). Deleting a CloudFormation stack is a bit tricky since
