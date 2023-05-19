@@ -404,7 +404,7 @@ Default output format [None]: json
 
 Note if you have multiple AWS accounts, you can use 
 [Named Profiles for the AWS
-CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-profiles.html)
+CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html#cli-configure-files-using-profiles)
 to easily swap between accounts. 
 
 ## (Optional) Install Session Manager Plugin
