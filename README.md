@@ -78,9 +78,9 @@ In the "Search for services" box at the top of the page, enter
 Service](https://us-east-2.console.aws.amazon.com/ecs/home?region=us-east-2)" or
 "ECS".
 
-In the main "Clusters" window,
-click on the cluster that was created (e.g., `access-idp-1`). Then click on
-the Service under the "Service Name" column (e.g., 
+In the main "Clusters" window, click on the cluster that was created
+(e.g., `access-idp-1`). Then click on the Service under the
+"Service Name" column (e.g., 
 `access-idp-1-Service-JGWEIBGIJEI-FargateService`).  Click the "Update Service"
 button. Change the "Desired tasks" to 1, then click the "Update" button.
 Back on the "Clusters" page, you should see that the "Tasks" column shows
