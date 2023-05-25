@@ -81,11 +81,10 @@ Service](https://us-east-2.console.aws.amazon.com/ecs/home?region=us-east-2)" or
 In the main "Clusters" window,
 click on the cluster that was created (e.g., `access-idp-1`). Then click on
 the Service under the "Service Name" column (e.g., 
-`access-idp-1-Service-JGWEIBGIJEI-FargateService`).  Click the "Update"
-button. Change the "Number of tasks" to 1, then click the "Skip to review"
-button. Finally, click the "Update Service" button. Back on the Cluster
-page, you should see that the "Desired tasks" column shows "1". Eventually,
-the "Running tasks" column will also show "1".
+`access-idp-1-Service-JGWEIBGIJEI-FargateService`).  Click the "Update Service"
+button. Change the "Desired tasks" to 1, then click the "Update" button.
+Back on the "Clusters" page, you should see that the "Tasks" column shows
+"1 Pending". Eventually, the "Tasks" column will show "1 Running".
 
 ## Test the Newly Deployed Stack
 
