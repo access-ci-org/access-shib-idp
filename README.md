@@ -330,9 +330,8 @@ Then click "Next".
 For tags, ensure key="WBS" value="ACCESS CONECT 1.4", then click "Next", then
 click "Import".
 
-Note that the ARN (AWS Registration Number) for the
-new TLS/SSL certificate remains unchanged, but the service must be
-[restarted](#restart-the-service) in order to pick up the new SSL certificate. 
+Note that the ARN (AWS Registration Number) for the new TLS/SSL certificate
+remains unchanged.
 
 ---
 
