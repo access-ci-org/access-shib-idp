@@ -325,10 +325,7 @@ Paste the contents of three files into the text boxes.
 * `idp_access-ci_org.key` goes into "Certificate private key".
 * `intermediate.crt goes` into "Certificate chain".
 
-Then click "Next".
-
-For tags, ensure key="WBS" value="ACCESS CONECT 1.4", then click "Next", then
-click "Import".
+Then click "Reimport certificate".
 
 Note that the ARN (AWS Registration Number) for the new TLS/SSL certificate
 remains unchanged.
