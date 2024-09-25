@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AttributeResolver
+        xmlns="urn:mace:shibboleth:2.0:resolver" 
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+        xsi:schemaLocation="urn:mace:shibboleth:2.0:resolver http://shibboleth.net/schema/idp/shibboleth-attribute-resolver.xsd">
+
+
+    <!-- ========================================== -->
+    <!--      Attribute Definitions                 -->
+    <!-- ========================================== -->
+
+    <AttributeDefinition id="uid" xsi:type="Simple">
+        <InputDataConnector ref="ScriptedAttributeConnector" attributeNames="uid" />
+        <DisplayName xml:lang="en">Local user ID</DisplayName>
+        <AttributeEncoder xsi:type="SAML1String" name="urn:mace:dir:attribute-def:uid" encodeType="false" />
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:0.9.2342.19200300.100.1.1" friendlyName="uid" encodeType="false" />
+    </AttributeDefinition>
+
+    <AttributeDefinition id="eduPersonPrincipalName" xsi:type="Scoped" scope="%{idp.scope}">
+        <InputDataConnector ref="ScriptedAttributeConnector" attributeNames="uid" />
+        <DisplayName xml:lang="en">Global username (ePPN)</DisplayName>
+        <AttributeEncoder xsi:type="SAML1ScopedString" name="urn:mace:dir:attribute-def:eduPersonPrincipalName" encodeType="false" />
+        <AttributeEncoder xsi:type="SAML2ScopedString" name="urn:oid:1.3.6.1.4.1.5923.1.1.1.6" friendlyName="eduPersonPrincipalName" encodeType="false" />
+    </AttributeDefinition>
+
+    <AttributeDefinition id="mail" xsi:type="Simple">
+        <InputDataConnector ref="ScriptedAttributeConnector" attributeNames="mail" />
+        <DisplayName xml:lang="en">Email address</DisplayName>
+        <AttributeEncoder xsi:type="SAML1String" name="urn:mace:dir:attribute-def:mail" encodeType="false" />
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:0.9.2342.19200300.100.1.3" friendlyName="mail" encodeType="false" />
+    </AttributeDefinition>
+
+    <AttributeDefinition xsi:type="Simple" id="surname">
+        <InputDataConnector ref="ScriptedAttributeConnector" attributeNames="sn" />
+        <DisplayName xml:lang="en">Surname</DisplayName>
+        <AttributeEncoder xsi:type="SAML1String" name="urn:mace:dir:attribute-def:sn" encodeType="false" />
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:2.5.4.4" friendlyName="sn" encodeType="false" />
+    </AttributeDefinition>
+
+    <AttributeDefinition xsi:type="Simple" id="givenName">
+        <InputDataConnector ref="ScriptedAttributeConnector" attributeNames="givenName" />
+        <DisplayName xml:lang="en">Given name</DisplayName>
+        <AttributeEncoder xsi:type="SAML1String" name="urn:mace:dir:attribute-def:givenName" encodeType="false" />
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:2.5.4.42" friendlyName="givenName" encodeType="false" />
+    </AttributeDefinition>
+
+    <AttributeDefinition xsi:type="Simple" id="displayName">
+        <InputDataConnector ref="ScriptedAttributeConnector" attributeNames="cn" />
+        <DisplayName xml:lang="en">Display name</DisplayName>
+        <AttributeEncoder xsi:type="SAML1String" name="urn:mace:dir:attribute-def:displayName" encodeType="false" />
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:2.16.840.1.113730.3.1.241" friendlyName="displayName" encodeType="false" />
+    </AttributeDefinition> 
+
+    <AttributeDefinition xsi:type="Simple" id="eduPersonAssurance">
+        <InputDataConnector ref="ScriptedAttributeConnector" attributeNames="eduPersonAssurance" />
+        <DisplayName xml:lang="en">eduPersonAssurance</DisplayName>
+        <AttributeEncoder xsi:type="SAML1String" name="urn:mace:dir:attribute-def:eduPersonAssurance" encodeType="false" />
+        <AttributeEncoder xsi:type="SAML2String" name="urn:oid:1.3.6.1.4.1.5923.1.1.1.11" friendlyName="eduPersonAssurance" encodeType="false" />
+    </AttributeDefinition>
+
+
+
+    <!-- ========================================== -->
+    <!--      Data Connectors                       -->
+    <!-- ========================================== -->
+
+    <DataConnector id="ScriptedAttributeConnector" xsi:type="ScriptedDataConnector">
+        <Script><![CDATA[
+
+IdPAttribute = Java.type("net.shibboleth.idp.attribute.IdPAttribute");
+ArrayList = Java.type("java.util.ArrayList");
+StringAttributeValue = Java.type("net.shibboleth.idp.attribute.StringAttributeValue");
+
+var XA_REQUESTER = "ACCESSIDP";
+var XA_API_KEY = "XXXX-XDCDBAPIKey-XXXX";
+var API_URL = "https://allocations-api.access-ci.org/identity/profiles/v1/people/";
+var INCOMMON_CACERTS = "%{idp.home}/conf/incommon.cacerts";
+
+var uid = resolutionContext.principal;
+uid = uid.replace(/@.*$/,"");
+setStringAttribute("uid",uid);
+
+var response = getUserinfoResponse(uid);
+
+try {
+    var givenName = "";
+    var displayname = "";
+    var surname = "";
+    var email = "";
+    var status = "";
+    var json = JSON.parse(response);
+    if ((json.firstName !== null) &&
+        (json.firstName !== undefined) &&
+        (json.firstName.length > 0)) {
+        givenName = json.firstName;
+        setStringAttribute('givenName',givenName);
+        displayname += givenName;
+    }
+    if ((json.middleName !== null) &&
+        (json.middleName !== undefined) &&
+        (json.middleName.length > 0)) {
+        if (displayname.length > 0) {
+            displayname += " ";
+        }
+        displayname += json.middleName;
+    }
+    if ((json.lastName !== null) &&
+        (json.lastName !== undefined) &&
+        (json.lastName.length > 0)) {
+        surname = json.lastName;
+        setStringAttribute('sn',surname);
+        if (displayname.length > 0) {
+            displayname += " ";
+        }
+        displayname += surname;
+    }
+    if (displayname.length > 0) {
+        setStringAttribute('cn',displayname);
+    }
+    if ((json.email !== null) &&
+        (json.email !== undefined) &&
+        (json.email.length > 0)) {
+        mail = json.email;
+        setStringAttribute('mail',mail);
+    }
+    // CACC-173/CACC-199 Add values for eduPersonAssurance attribute
+    if ((json.status !== null) &&
+        (json.status !== undefined) &&
+        (json.status.length > 0)) {
+        status = json.status;
+    }
+    setEduPersonAssurance(status,surname);
+} catch (e) {
+}
+
+function getUserinfoResponse(username) {
+    var retstr = "";
+
+    if (username.length > 0) {
+        try {
+            java.lang.System.setProperty("javax.net.ssl.trustStore",INCOMMON_CACERTS);
+            var url = new java.net.URL(API_URL + username);
+            var con = url.openConnection();
+            con.setRequestMethod("GET");
+            con.setRequestProperty("XA-REQUESTER",XA_REQUESTER);
+            con.setRequestProperty("XA-API-KEY",XA_API_KEY);
+            con.setConnectTimeout(15 * 1000);
+            con.setReadTimeout(15 * 1000);
+            var responseCode = con.getResponseCode();
+            var inStream;
+            if (responseCode === 200) {
+                inStream = con.getInputStream();
+            } else {
+                inStream = con.getErrorStream();
+            }
+            var inReader = new java.io.BufferedReader(
+                new java.io.InputStreamReader(inStream));
+            var inputLine;
+            var response = new java.lang.StringBuffer();
+
+            while ((inputLine = inReader.readLine()) !== null) {
+                response.append(inputLine);
+            }
+            inReader.close();
+
+            retstr = response.toString();
+        } catch(e) {
+        }
+    }
+
+    return retstr;
+}
+
+function setStringAttribute(attrName,attrValue) {
+    var attr = new IdPAttribute(attrName);
+    var list = new ArrayList();
+    list.add(new StringAttributeValue(attrValue));
+    attr.setValues(list);
+    connectorResults.add(attr);
+}
+
+function setEduPersonAssurance(status,surname) {
+    var attr = new IdPAttribute('eduPersonAssurance');
+    var list = new ArrayList();
+    list.add(new StringAttributeValue('https://refeds.org/assurance'));
+    list.add(new StringAttributeValue('https://refeds.org/assurance/IAP/low'));
+    if ((status === 'active') &&
+        (surname.toUpperCase() !== 'COMMUNITY USER')) {
+        list.add(new StringAttributeValue('https://refeds.org/assurance/ID/unique'));
+        list.add(new StringAttributeValue('https://refeds.org/assurance/ID/eppn-unique-no-reassign'));
+        list.add(new StringAttributeValue('https://refeds.org/assurance/IAP/medium'));
+        list.add(new StringAttributeValue('https://refeds.org/assurance/profile/cappuccino'));
+    }
+    attr.setValues(list);
+    connectorResults.add(attr);
+}
+
+       ]]></Script>
+    </DataConnector>
+
+
+</AttributeResolver>

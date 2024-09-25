@@ -4,7 +4,8 @@
 
 [idp.access-ci.org](https://idp.access-ci.org/idp/) is a
 [Shibboleth Identity Provider
-v4.x](https://wiki.shibboleth.net/confluence/display/IDP4/) (IdP) hosted in
+v5.x](https://shibboleth.atlassian.net/wiki/spaces/IDP5/overview) (IdP) hosted
+in
 [AWS](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
 (Amazon Web Services) infrastructure. The installation is achieved using an
 [AWS Reference Architecture for Shibboleth
@@ -15,7 +16,7 @@ networks. This documentation describes the installation and configuration
 process in detail so that the Identity Provider can be reproduced and
 updated.
 
-For the initial setup of your local development environment and upload of 
+For the initial setup of your local development environment and upload of
 IdP secrets, see the [Initial Setup](#initial-setup) section below.
 
 ## Install the CloudFormation Stack
@@ -80,7 +81,7 @@ Service](https://us-east-2.console.aws.amazon.com/ecs/home?region=us-east-2)" or
 
 In the main "Clusters" window, click on the cluster that was created
 (e.g., `access-idp-1`). Then click on the Service under the
-"Service Name" column (e.g., 
+"Service Name" column (e.g.,
 `access-idp-1-Service-JGWEIBGIJEI-FargateService`).  Click the "Update Service"
 button. Change the "Desired tasks" to 1, then click the "Update" button.
 Back on the "Clusters" page, you should see that the "Tasks" column shows
@@ -148,9 +149,9 @@ openssl x509 -noout -subject -issuer -enddate -in "/tmp/x509up_u${UID}"
 ### Test Web Login
 
 Go to https://cilogon.org/testidp/ (preferrably using a single
-Private/Incognito browser window) and select "ACCESS CI". Log in with your
-ACCESS Kerberos username and password, and verify that you got all of the
-User Attributes you expect. 
+Private/Incognito browser window) and select "ACCESS CI (XSEDE)". Log in with
+your ACCESS Kerberos username and password, and verify that you got all of the
+User Attributes you expect.
 
 When you are finished testing, remove the extra line from your `/etc/hosts`
 file (or prepend with '#' to comment it out).
@@ -159,17 +160,17 @@ file (or prepend with '#' to comment it out).
 
 Once everything is running as expected, increase the number of running
 instances from 1 to 2. This will provide load balancing and fail-over in
-case of failure of one of the service instances. See 
+case of failure of one of the service instances. See
 [Update the Number of Running
 Instances](#update-the-number-of-running-instances) above for instructions
 on how to do this. It's also a good idea to retest ECP and web browser
-login using all of the various IP addresses for the 
+login using all of the various IP addresses for the
 [LoadBalancerDNSName](find-the-load-balancer-dns-name).
 
 ## Update DNS to the New Stack
 
 Once you are satisfied with the new CloudFormation stack, update the DNS
-entry to point to the new stack. 
+entry to point to the new stack.
 
 The DNS entry for `idp.access-ci.org` is a CNAME record managed by NCSA,
 which points to `idp.dyn-access-ci.org`. The `dyn-access-ci.org` domain
@@ -277,9 +278,9 @@ Service](https://us-east-2.console.aws.amazon.com/ecs/home?region=us-east-2)" or
 
 In the main "Cluster" window,
 click on the cluster that was created (e.g., `access-idp-1`). Then click on
-the Service under the "Service Name" column (e.g., 
+the Service under the "Service Name" column (e.g.,
 `access-idp-1-Service-JGWEIBGIJEI-FargateService`).  Click the "Update"
-button. 
+button.
 
 You now have two options.
 
@@ -304,10 +305,15 @@ requested with the "Enable Auto-Renewal" setting.  When the current
 certificate is about to expire, Certificate Services Manager will send an
 email to the requesters with a link to a new certificate. Use the
 instructions [below](#obtain-a-new-incommon-ssl-cert-for-https) to select the
-correct download links for the new certificate and intermediate certificate chain.
-Be sure to delete the last (root) certificate from the intermediate certificate
-file. Note that you will also need the `idp_access-ci_org.key` file you generated
-before.
+correct download links for the new certificate and intermediate certificate
+chain.  Be sure to delete the last (root) certificate from the intermediate
+certificate file. Note that you will also need the `idp_access-ci_org.key`
+file you generated before which was stored in the [AWS Secrets
+Manager](https://us-east-2.console.aws.amazon.com/secretsmanager/listsecrets?region=us-east-2)
+as `idp-access-ci-org-ssl-key`. (Hint: Click "Retrieve secret value" to view
+the `idp_access-ci_org.key` file. Also see [AWS CLI
+Commands](#aws-cli-commands) below for a command line version of downloading
+the `idp_acess-ci_org.key` file.)
 
 Log in to the [AWS
 Console](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
@@ -357,7 +363,7 @@ codes).
 ## Install the AWS CLI to Local Development Environment
 
 In order to facilitate the uploading of secrets to AWS, install the AWS CLI
-to your local development machine. Instructions are available at 
+to your local development machine. Instructions are available at
 https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2-linux.html.
 Example:
 
@@ -376,7 +382,7 @@ using your XSEDE/ACCESS IAM User account.
 
 In the "Search for services" box at the top of the page, enter
 "[IAM](https://us-east-1.console.aws.amazon.com/iamv2)". In the
-right pane, click "Users". 
+right pane, click "Users".
 
 On the "Users" page, scroll until you find your name.
 You may need to use the `<` / `>` page arrow buttons to see more users
@@ -397,16 +403,16 @@ Default region name [None]: us-east-2
 Default output format [None]: json
 ```
 
-Note if you have multiple AWS accounts, you can use 
+Note if you have multiple AWS accounts, you can use
 [Named Profiles for the AWS
 CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html#cli-configure-files-using-profiles)
-to easily swap between accounts. 
+to easily swap between accounts.
 
 ## (Optional) Install Session Manager Plugin
 
 If you need to log in to the running IdP instance for debugging (like
 `docker exec -it ... /bin/sh`), you first need to install the [AWS CLI Session
-Manager Plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html). 
+Manager Plugin](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html).
 
 But this is just the client-side configuration. Changes also need to be made
 server-side to enable [ECS
@@ -425,12 +431,12 @@ file must be updated to include the `EnableExecuteCommand` property:
 ```
 
 IAM access permissions may also need to be updated to allow ECS Exec for your
-AWS user account. 
+AWS user account.
 
 ## Obtain a New InCommon SSL Cert for HTTPS
 
 The TSL/SSL connection (`https://` on port 443) is secured by an InCommon
-certificate. 
+certificate.
 
 First, generate a new certificate signing request (CSR).
 
@@ -443,22 +449,23 @@ openssl req \
         -out idp_access-ci_org.csr
 ```
 
-**IMPORTANT**: Be sure to save the newly generated `idp_access-ci_org.key`
-file someplace safe. This file will be needed again for certificate
-renewal in one year. The key is available in the NCSA shared LastPass folder
-"Shared-security-certauth" in the "ACCESS IDP SSL cert private key" note.
+**IMPORTANT**: Save the newly generated `idp_access-ci_org.key`
+file some place safe on your local filesystem. We will upload this key file to
+the Secrets Manager [below](#upload-idp-certs-and-keys-to-aws-secrets-manager)
+since this file will be needed for certificate renewal in one year.
 
-Log in to the [InCommon Certificate Manager](https://cert-manager.com/customer/InCommon). (If you do not have access to
-the InCommon Certificate Manager, send the resulting
+Log in to the [InCommon Certificate
+Manager](https://cert-manager.com/customer/InCommon). (If you do not have
+access to the InCommon Certificate Manager, send the resulting
 `idp_access-ci_org.csr` to help+idp@ncsa.illinois.edu asking for a new
 "InCommon SSL (SHA-2)" certificate.)
 
 Once you are logged in, select the "Hamburger" menu -> Certificates ->
-SSL Certificates. 
+SSL Certificates.
 
 Click the "+" (Add) button in the upper right corner.
 
-1. Initial "Request SSL Certificate" Page: 
+1. Initial "Request SSL Certificate" Page:
    select "Using a Certificate Signing Request (CSR)",
    then click "Next".
 2. "Details" step:
@@ -470,7 +477,7 @@ Click the "+" (Add) button in the upper right corner.
    then click "Next".
 3. "CSR" step: Paste `idp_access-ci_org.csr` into CSR field, then click
    "Next".
-4. "Domains" step: Common Name should be auto-filled with "idp.access-ci.org", 
+4. "Domains" step: Common Name should be auto-filled with "idp.access-ci.org",
    then click "Next".
 5. "Auto-renewal" step: Turn on "Enable Auto-Renewal" slider, renew 30 days
    prior to expiration, then click "OK".
@@ -525,43 +532,36 @@ idp.access-ci.org Domain name.
 
 Under Certificate status, note the ARN (AWS Registration Number) for the
 new idp.access-ci.org certificate. This will be used as the default value
-in the 
+in the
 [access-ci-aws-shibboleth-idp.yaml](https://s3.console.aws.amazon.com/s3/object/access-idp-templates?region=us-east-2&prefix=access-ci-aws-shibboleth-idp.yaml) file.
 
-## Generate API Key for XDCDB
+## Generate API Key for Allocations API
 
-In order to populate name and email attributes, a query is made to an XDCDB
-API endpoint using an API key. Go to the [new XDCDB API
-site](https://a3mdev.xsede.org/xdcdb-api-test-new/) and click [Generate
-APIKEY](https://a3mdev.xsede.org/xdcdb-api-test-new/api/api_key). This will
-generate two new values `API-KEY` and an associated `HASH`. Record the
-`API-KEY` for use below, and follow the instructions on the page to send the
-`HASH` to [ACCESS
-Support](https://support.access-ci.org/user/login?destination=/open-a-ticket).
-The "agent" is "ACCESSIDP", and the "resource" is "idp.access-ci.org".
-Example email:
+In order to populate name and email attributes, a query is made to an
+Allocations API endpoint using an API key. [Open A
+Ticket](https://support.access-ci.org/help-ticket) on the ACCESS Support site
+with a request for anew API key for
+<https://allocations-api.access-ci.org/identity/profiles/v1/people/> with the
+following information.
 
 ```
-Subject: ACCESS-API Hash Installation Request
+Subject: ACCESS Allocations API Key Request
 
-Please install the following HASH for agent "ACCESSIDP" for
-resource/hostname "idp.access-ci.org":
+Please generate a new ACCESS Allocations API key (and hash) to be used with
+https://allocations-api.access-ci.org/identity/profiles/v1/people/ .
 
-    $2a$10$PNCCWKj7QAOrHhZuSfyEPun5.eidIz3EnWMx0MwaehJ/zaeMz9152
-
-on server https://a3mdev.xsede.org/xdcdb-api-test-new/
+Agent = ACCESSIDP
+Resource/hostname = idp.access-ci.org
 ```
 
-Do NOT send the `API-KEY` in the email. This value is secret and will be
-uploaded to the AWS Secrets Manager below.
-
-## 
+The secret `API-KEY` will be given to you and eventually uploaded to the AWS
+Secrets Manager below.
 
 ## Temporarily Install Shibboleth IdP Software
 
 In order to generate the necessary certificates and keys for the IdP software,
 do a fresh [install of the Shibboleth
-IdP](https://shibboleth.atlassian.net/wiki/x/DgFwSw) software to your local
+IdP](https://shibboleth.atlassian.net/wiki/x/IYG0vg) software to your local
 development box. This step generates credentials to be used by the AWS IdP
 installation. The local Shibboleth IdP installation can be deleted later.
 
@@ -670,12 +670,19 @@ aws secretsmanager create-secret \
     --description "The API-KEY used when contacting the XDCDB API" \
     --tags '[{"Key":"WBS","Value":"ACCESS CONECT 1.4"}]' \
     --secret-string '{"key":"'"${API_KEY}"'"}'
+
+export KEY=$(sed -z  's/\n/\\n/g' idp_access-ci_org.key)
+aws secretsmanager create-secret \
+    --name "${SECRETPREFIX}-ssl-key" \
+    --description "Key for SSL/TLS certificate for idp.access-ci.org" \
+    --tags '[{"Key":"WBS","Value":"ACCESS CONECT 1.4"}]' \
+    --secret-string '{"key":"'"${KEY}"'"}'
 ```
 
 ## Obtain a Kerberos Keytab file for HTTP-idp.access-ci.org
 
 The IdP is configured to authenticate users using Kerberos. For this, we need
-a keytab file. 
+a keytab file.
 
 Submit a request at [ACCESS
 Support](https://support.access-ci.org/user/login?destination=/open-a-ticket)
@@ -712,7 +719,7 @@ aws secretsmanager create-secret \
 ```
 
 After the keytab file is uploaded, note the ARN (AWS Registration Number).
-This will be used as the default value in the 
+This will be used as the default value in the
 [access-ci-aws-shibboleth-idp.yaml](https://s3.console.aws.amazon.com/s3/object/access-idp-templates?region=us-east-2&prefix=access-ci-aws-shibboleth-idp.yaml) file.
 
 ## Obtain Duo Application Secrets
@@ -722,71 +729,54 @@ Duo "Applications" must be created and the resulting keys uploaded to AWS.
 
 Submit a request at [ACCESS
 Support](https://support.access-ci.org/user/login?destination=/open-a-ticket)
-asking for 3 new Duo Applications:
+asking for 2 new Duo Applications:
 
 ```
-Application 1
-Type: Shibboleth
-Name: idp.access-ci.org Shib
-
-Application  2
-Type: Auth API
-Name: idp.access-ci.org ECP
-
-Application 3
+Application 2
 Type: Web SDK
 Name idp.access-ci.org
+
+Application  1
+Type: Auth API
+Name: idp.access-ci.org ECP
 ```
 
 These should be configured similarly to the existing idp.xsede.org
-Applications. 
+Applications.
 
-Next, generate two [application
-keys](https://duo.com/docs/duoweb-v2#1.-generate-an-akey) for the browser
-and non-browser (ECP) flows. These are values that are kept secret from Duo
+Next, generate an [application
+keys](https://duo.com/docs/duoweb-v2#1.-generate-an-akey) for the
+non-browser (ECP) flow. This is a value that is kept secret from Duo
 and should be at least 40 characters long.
 
 ```
-export B_APP_KEY=$(openssl rand -hex 20)
 export E_APP_KEY=$(openssl rand -hex 20)
-echo "browser_app_key = ${B_APP_KEY}"
 echo "ecp_app_key = ${E_APP_KEY}"
-
 ```
 
 Record the resulting secrets/keys in a text file `ACCESS-Duo.txt`. (Note
 that the values below are not the actual keys.)
 
 ```
-idp.access-ci.org Shib (Shibboleth)
-browser_app_key = abcdefghijklmnopqrstuvwxyz01234567890101
-browser_int_key = DEFGHIJKLMNOPQRSTUVW
-browser_sec_key = xyz0123456789101abcdefghijklmnopqrstuvwx
-browser_api_host = api-12345678.duosecurity.com
+idp.access-ci.org (Web SDK)
+oidc_int_key = FGHIJKLMNOPQRSTUVWXY
+oidc_sec_key = pqrstuvwxyz0123456789010abcdefghijklmnop
+oidc_api_host = api-12345678.duosecurity.com
 
 idp.access-ci.org ECP (Auth API)
 ecp_app_key = bcdefghijklmnopqrstuvwxyz0123456789abcde
 ecp_int_key = EFGHIJKLMNOPQRSTUVWX
 ecp_sec_key = 7890101abcdefghijklmnopqrstuvwxyz0123456
 ecp_api_host = api-12345678.duosecurity.com
-
-idp.access-ci.org (Web SDK)
-oidc_int_key = FGHIJKLMNOPQRSTUVWXY
-oidc_sec_key = pqrstuvwxyz0123456789010abcdefghijklmnop
-oidc_api_host = api-12345678.duosecurity.com
-
 ```
 
 ## Upload the Duo Application Secrets to AWS Secrets Manager
 
 Using the file `ACCESS-Duo.txt` created above, use the AWS CLI to
-upload them to the AWS Secrets Manager. 
+upload them to the AWS Secrets Manager.
 
 ```
 export SECRETPREFIX=idp-access-ci-org
-export B_APP=$(grep "^browser_app_key" ACCESS-Duo.txt | sed -e 's/.* = //')
-export B_INT=$(grep "^browser_int_key" ACCESS-Duo.txt | sed -e 's/.* = //')
-export B_SEC=$(grep "^browser_sec_key" ACCESS-Duo.txt | sed -e 's/.* = //')
 export E_APP=$(grep "^ecp_app_key" ACCESS-Duo.txt | sed -e 's/.* = //')
 export E_INT=$(grep "^ecp_int_key" ACCESS-Duo.txt | sed -e 's/.* = //')
 export E_SEC=$(grep "^ecp_sec_key" ACCESS-Duo.txt | sed -e 's/.* = //')
@@ -797,11 +787,11 @@ aws secretsmanager create-secret \
     --description "The keys for Duo MFA" \
     --tags '[{"Key":"WBS","Value":"ACCESS CONECT 1.4"}]' \
     --secret-string \
-    '{"browser_app_key":"'"${B_APP}"'","browser_int_key":"'"${B_INT}"'","browser_sec_key":"'"${B_SEC}"'","ecp_app_key":"'"${E_APP}"'","ecp_int_key":"'"${E_INT}"'","ecp_sec_key":"'"${E_SEC}"'","oidc_int_key":"'"${O_INT}"'","oidc_sec_key":"'"${O_SEC}"'"}'
+    '"ecp_app_key":"'"${E_APP}"'","ecp_int_key":"'"${E_INT}"'","ecp_sec_key":"'"${E_SEC}"'","oidc_int_key":"'"${O_INT}"'","oidc_sec_key":"'"${O_SEC}"'"}'
 ```
 
 After the Duo secrets are uploaded, note the ARN (AWS Registration Number).
-This will be used as the default value in the 
+This will be used as the default value in the
 [access-ci-aws-shibboleth-idp.yaml](https://s3.console.aws.amazon.com/s3/object/access-idp-templates?region=us-east-2&prefix=access-ci-aws-shibboleth-idp.yaml) file.
 
 ## Upload Templates and Code to AWS S3
@@ -815,13 +805,23 @@ uploaded to a new AWS S3 bucket for access by AWS CloudFormation.
 
 The files are:
 
-* access-ci-aws-shibboleth-idp.yaml
-* access-ci-deployment-pipeline.yaml
-* access-ci-ecs-cluster.yaml
-* access-ci-load-balancer.yaml
-* access-ci-service.yaml
-* access-ci-vpc.yaml
+* [access-ci-aws-shibboleth-idp.yaml](access-ci-aws-shibboleth-idp.yaml)
+* [access-ci-deployment-pipeline.yaml](access-ci-deployment-pipeline.yaml)
+* [access-ci-ecs-cluster.yaml](access-ci-ecs-cluster.yaml)
+* [access-ci-load-balancer.yaml](access-ci-load-balancer.yaml)
+* [access-ci-service.yaml](access-ci-service.yaml)
+* [access-ci-vpc.yaml](access-ci-vpc.yaml)
 * code.zip
+
+To create `code.zip`, change into the `code` directory and `zip` the contents
+of the current directory. Note that the `code` directory is NOT
+part of the resulting zip file, i.e., the *contents* of the `code` directory
+are at the top level of the zip file.
+
+```
+cd code
+zip -r ../code.zip .
+```
 
 The main AWS CloudFormation template file is
 `access-ci-aws-shibboleth-idp.yaml`. The other template files are
@@ -869,8 +869,9 @@ mailing list.
 
 ## Source Configuration Files
 
-The configuration (yaml) files used for setting up the XSEDE IdP
-CloudFormation stack resides in an S3 bucket
+The configuration (yaml) files used for setting up the ACCESS IdP
+CloudFormation stack are stored in this repository for version tracking, but
+ultimately they reside in an S3 bucket
 '[access-idp-templates](https://s3.console.aws.amazon.com/s3/buckets/access-idp-templates/)'.
 These templates are modified versions of the [AWS Reference Architecture for
 Shibboleth IdP](https://github.com/aws-samples/aws-refarch-shibboleth)
@@ -887,11 +888,19 @@ configuration files:
 Of these files, `code.zip` may need to be updated when a new version of the
 [Shibboleth IdP Software](https://shibboleth.atlassian.net/wiki/x/CgFwSw)
 is released, due to configuration file changes.
-If so, download `code.zip`, make changes as necessary, and re-upload the
-file to the S3 bucket. Files in the S3 bucket are version controlled, so
+If so, make changes as necessary, create a new `code.zip` file, and re-upload
+the file to the S3 bucket. Files in the S3 bucket are version controlled, so
 you can revert to a previous version if necessary. After a new `code.zip`
 file has been uploaded, you will need to redeploy the stack (using a new
 stack number) to read the updated configuration files.
+
+Note that the `code.zip` file does NOT contain a top-level `code` directory
+like stored in this repository. Create the `code.zip` file as follows.
+
+```
+cd code
+zip -r ../code.zip .
+```
 
 ## AWS Components
 
@@ -948,6 +957,14 @@ aws secretsmanager list-secrets |
         select (.Name | test ("^idp-access-ci-org-")) |
         .ARN' |
     sed -e 's/^"//' -e 's/"$//'
+```
+
+### Download `idp_access-ci_org.key` File for Updating the SSL/TLS Certificate
+
+```
+aws secretsmanager get-secret-value --secret-id idp-access-ci-org-ssl-key |
+    jq -r '.SecretString' |
+    jq -r '.key' > idp_access-ci_org.key
 ```
 
 ### Update an Existing Secret Value
@@ -1041,7 +1058,7 @@ using your XSEDE/ACCESS IAM User account.
 
 In the "Search for services" box at the top of the page, enter
 "[IAM](https://us-east-1.console.aws.amazon.com/iamv2)". In the
-right pane, click "Users". 
+right pane, click "Users".
 
 On the "Users" page, scroll until you find your name.
 You may need to use the `<` / `>` page arrow buttons to see more users
@@ -1053,7 +1070,7 @@ credentials" button. You will be shown a popup window with a new "User
 name" and "Password". Click the "Show" link to show your "Password". Record
 these values somewhere safe. The password will not be shown again. This
 user name and password are used for [HTTPS git operations with
-CodeCommit](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_ssh-keys.html#git-credentials-code-commit). 
+CodeCommit](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_ssh-keys.html#git-credentials-code-commit).
 
 In the "Search for services" box at the top of the page, enter
 "[CodeCommit](https://us-east-2.console.aws.amazon.com/codesuite/codecommit/home?region=us-east-2)".
@@ -1066,7 +1083,7 @@ Alternatively, you can clone the repo with the AWS CLI as follows.
 ```
 export STACK_NAME=access-idp-1
 
-url=`aws codecommit get-repository --repository-name "${STACK_NAME}" | 
+url=`aws codecommit get-repository --repository-name "${STACK_NAME}" |
     jq '.repositoryMetadata.cloneUrlHttp' |
     sed -e 's/^"//' -e 's/"$//'` && git clone $url
 ```

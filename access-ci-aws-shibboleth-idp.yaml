@@ -1,0 +1,239 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+
+
+Description: >
+  This is a customized AWS CloudFormation template for idp.access-ci.org
+  based on the AWS Reference Architecture Shibboleth IdP implementation
+  (https://github.com/aws-samples/aws-refarch-shibboleth).
+
+Parameters:
+
+  LaunchType:
+    Type: String
+    Default: Fargate
+    AllowedValues:
+      - Fargate
+      - EC2
+    Description: >
+      The launch type for your service. Selecting EC2 will create an Auto
+      Scaling group of t2.micro instances for your cluster. See
+      https://docs.aws.amazon.com/AmazonECS/latest/developerguide/launch_types.html
+      to learn more about launch types.
+
+  CertificateARN:
+    Type: String
+    Default: 'arn:aws:acm:us-east-2:548855480644:certificate/dd13c853-5d6f-4ef2-903c-6007eee3fb47'
+    Description: >
+      The Certificates ARN of the SSL certificate to be used on HTTPS connection
+
+  SigningARN:
+    Type: String
+    Default: 'arn:aws:secretsmanager:us-east-2:548855480644:secret:idp-access-ci-org-signing-nJOir6'
+    Description:
+      The Secrets Manager ARN of the IdP Signing credential (cert+key)
+
+  EncryptionARN:
+    Type: String
+    Default: 'arn:aws:secretsmanager:us-east-2:548855480644:secret:idp-access-ci-org-encryption-3E6xKJ'
+    Description: >
+      The Secrets Manager ARN of the IdP Encryption credential (cert+key)
+
+  BackchannelARN:
+    Type: String
+    Default: 'arn:aws:secretsmanager:us-east-2:548855480644:secret:idp-access-ci-org-backchannel-MMnPzH'
+    Description: >
+      The Secrets Manager ARN of the IdP Backchannel credential (cert+key)
+
+  HTTPKeytabARN:
+    Type: String
+    Default: 'arn:aws:secretsmanager:us-east-2:548855480644:secret:idp-access-ci-org-HTTP-keytab-k93bZK'
+    Description: >
+      The Secrets Manager ARN of the HTTP Kerberos Keytab
+
+  SealerKeyARN:
+    Type: String
+    Default: 'arn:aws:secretsmanager:us-east-2:548855480644:secret:idp-access-ci-org-sealer-key-qN7ipe'
+    Description: >
+      The Secrets Manager ARN of the Sealer Key JKS and Password
+
+  PersistentIDSaltARN:
+    Type: String
+    Default: 'arn:aws:secretsmanager:us-east-2:548855480644:secret:idp-access-ci-org-persistentid-salt-z1kVFM'
+    Description: >
+      The Secrets Manager ARN of the PersistentID Salt
+
+  DuoSettingsARN:
+    Type: String
+    Default: 'arn:aws:secretsmanager:us-east-2:548855480644:secret:idp-access-ci-org-duo-settings-h9L3pP'
+    Description: >
+      The Secrets Manager ARN of the Duo Settings
+
+  XDCDBAPIKeyARN:
+    Type: String
+    Default: 'arn:aws:secretsmanager:us-east-2:548855480644:secret:idp-access-ci-org-api-key-9giMnr'
+    Description: >
+      The Secrets Manager ARN of the XDCDB API Key
+
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterLabels:
+      LaunchType:
+        default: "Launch Type"
+      CertificateARN:
+        default: "Certificate ARN for HTTPS Listener"
+      SigningARN:
+        default: "Secrets Manager ARN for Signing key"
+      EncryptionARN:
+        default: "Secrets Manager ARN for Encryption key"
+      BackchannelARN:
+        default: "Secrets Manager ARN for Backchannel key"
+      HTTPKeytabARN:
+        default: "Secrets Manager ARN for Kerberos HTTP keytab"
+      SealerKeyARN:
+        default: "Secrets Manager ARN for Sealer JKS and password"
+      PersistentIDSaltARN:
+        default: "Secrets Manager ARN for PersistentID salt"
+      DuoSettingsARN:
+        default: "Secrets Manager ARN for Duo settings"
+      XDCDBAPIKeyARN:
+        default: "Secrets Manager ARN for XDCDB API key"
+    ParameterGroups:
+      - Label:
+          default: ECS Cluster Configuration
+        Parameters:
+          - LaunchType
+      - Label:
+          default: Identity Provider Certificates, Keys, and Secrets
+        Parameters:
+          - CertificateARN
+          - SigningARN
+          - BackchannelARN
+          - EncryptionARN
+          - SealerKeyARN
+          - HTTPKeytabARN
+          - DuoSettingsARN
+          - XDCDBAPIKeyARN
+          - PersistentIDSaltARN
+
+Resources:
+
+  VPC:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: "https://access-idp-templates.s3.us-east-2.amazonaws.com/access-ci-vpc.yaml"
+      Parameters:
+        Name: !Ref AWS::StackName
+        VpcCIDR: !Join
+          - ''
+          - - '10.21'
+            - !Select [2, !Split ["-", !Ref AWS::StackName]]
+            - '.0.0/16'
+        PublicSubnet1CIDR: !Join
+          - ''
+          - - '10.21'
+            - !Select [2, !Split ["-", !Ref AWS::StackName]]
+            - '.1.0/24'
+        PublicSubnet2CIDR: !Join
+          - ''
+          - - '10.21'
+            - !Select [2, !Split ["-", !Ref AWS::StackName]]
+            - '.2.0/24'
+        PrivateSubnet1CIDR: !Join
+          - ''
+          - - '10.21'
+            - !Select [2, !Split ["-", !Ref AWS::StackName]]
+            - '.11.0/24'
+        PrivateSubnet2CIDR: !Join
+          - ''
+          - - '10.21'
+            - !Select [2, !Split ["-", !Ref AWS::StackName]]
+            - '.12.0/24'
+      Tags:
+        - Key: WBS
+          Value: 'ACCESS CONECT 1.4'
+
+  LoadBalancer:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: "https://access-idp-templates.s3.us-east-2.amazonaws.com/access-ci-load-balancer.yaml"
+      Parameters:
+        LaunchType: !Ref LaunchType
+        Subnets: !GetAtt VPC.Outputs.Subnets
+        VpcId: !GetAtt VPC.Outputs.VpcId
+        CreateHTTPSListener: true
+        CertificateARN: !Ref CertificateARN
+      Tags:
+        - Key: WBS
+          Value: 'ACCESS CONECT 1.4'
+
+  Cluster:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: "https://access-idp-templates.s3.us-east-2.amazonaws.com/access-ci-ecs-cluster.yaml"
+      Parameters:
+        Name: !Ref AWS::StackName
+        LaunchType: !Ref LaunchType
+        SourceSecurityGroup: !GetAtt LoadBalancer.Outputs.SecurityGroup
+        Subnets: !GetAtt VPC.Outputs.PrivateSubnets
+        VpcId: !GetAtt VPC.Outputs.VpcId
+      Tags:
+        - Key: WBS
+          Value: 'ACCESS CONECT 1.4'
+
+  DeploymentPipeline:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: "https://access-idp-templates.s3.us-east-2.amazonaws.com/access-ci-deployment-pipeline.yaml"
+      Parameters:
+        Name: !Ref AWS::StackName
+        ParentDomain: 'access-ci.org'
+        Cluster: !GetAtt Cluster.Outputs.ClusterName
+        Service: !GetAtt Service.Outputs.Service
+        CodeCommitRepoName: !Ref AWS::StackName
+        FullyQualifiedDomainName: 'idp.access-ci.org'
+        SecretsManagerSigningARN: !Ref SigningARN
+        SecretsManagerEncryptionARN: !Ref EncryptionARN
+        SecretsManagerBackchannelARN: !Ref BackchannelARN
+        SecretsManagerHTTPKeytabARN: !Ref HTTPKeytabARN
+        SecretsManagerSealerKeyARN: !Ref SealerKeyARN
+        SecretsManagerPersistentIDSaltARN: !Ref PersistentIDSaltARN
+        SecretsManagerDuoSettingsARN: !Ref DuoSettingsARN
+        SecretsManagerXDCDBAPIKeyARN: !Ref XDCDBAPIKeyARN
+      Tags:
+        - Key: WBS
+          Value: 'ACCESS CONECT 1.4'
+
+  Service:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: "https://access-idp-templates.s3.us-east-2.amazonaws.com/access-ci-service.yaml"
+      Parameters:
+        Name: !Ref AWS::StackName
+        Cluster: !GetAtt Cluster.Outputs.ClusterName
+        DesiredCount: 0
+        LaunchType: !Ref LaunchType
+        TargetGroup: !GetAtt LoadBalancer.Outputs.TargetGroup
+        SourceSecurityGroup: !GetAtt LoadBalancer.Outputs.SecurityGroup
+        Subnets: !GetAtt VPC.Outputs.PrivateSubnets
+        ContainerImageURI: !Sub ${AWS::AccountId}.dkr.ecr.${AWS::Region}.amazonaws.com/${AWS::StackName}
+      Tags:
+        - Key: WBS
+          Value: 'ACCESS CONECT 1.4'
+
+Outputs:
+  LoadBalancerCanonicalHostedZoneID:
+    Description: The load balancer identifier
+    Value: !GetAtt LoadBalancer.Outputs.CanonicalHostedZoneID
+
+  LoadBalancerDNSName:
+    Description: Value to set your fully qualified domain names CNAME entry to in you DNS provider
+    Value: !GetAtt LoadBalancer.Outputs.DNSName
+
+  ServiceUrl:
+    Description: The URL of the IdP.
+    Value: !Sub https://idp.access-ci.org/idp/
+
+  PipelineUrl:
+    Description: The continuous deployment pipeline in the AWS Management Console.
+    Value: !GetAtt DeploymentPipeline.Outputs.PipelineUrl

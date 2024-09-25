@@ -1,0 +1,154 @@
+---
+AWSTemplateFormatVersion: 2010-09-09
+
+
+Parameters:
+  Name:
+    Type: String
+
+  Cluster:
+    Type: String
+
+  DesiredCount:
+    Type: Number
+    Default: 0
+
+  LaunchType:
+    Type: String
+    Default: Fargate
+    AllowedValues:
+      - Fargate
+      - EC2
+
+  TargetGroup:
+    Type: String
+
+  SourceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup::Id
+
+  Subnets:
+    Type: List<AWS::EC2::Subnet::Id>
+
+  ContainerImageURI:
+    Type: String
+
+
+Conditions:
+  Fargate: !Equals [ !Ref LaunchType, "Fargate" ]
+
+  EC2: !Equals [ !Ref LaunchType, "EC2" ]
+
+
+Resources:
+  TaskRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+      Tags:
+        - Key: WBS
+          Value: 'ACCESS CONECT 1.4'
+
+  TaskExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      Tags:
+        - Key: WBS
+          Value: 'ACCESS CONECT 1.4'
+
+  LogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /ecs/${Name}
+      Tags:
+        - Key: WBS
+          Value: 'ACCESS CONECT 1.4'
+
+  FargateService:
+    Type: AWS::ECS::Service
+    Condition: Fargate
+    Properties:
+      Cluster: !Ref Cluster
+      DesiredCount: !Ref DesiredCount
+      HealthCheckGracePeriodSeconds: 120
+      TaskDefinition: !Ref TaskDefinition
+      LaunchType: FARGATE
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups:
+            - !Ref SourceSecurityGroup
+          Subnets: !Ref Subnets
+      LoadBalancers:
+        - ContainerName: !Ref Name
+          ContainerPort: 443
+          TargetGroupArn: !Ref TargetGroup
+      Tags:
+        - Key: WBS
+          Value: 'ACCESS CONECT 1.4'
+
+  EC2Service:
+    Type: AWS::ECS::Service
+    Condition: EC2
+    Properties:
+      Cluster: !Ref Cluster
+      DesiredCount: !Ref DesiredCount
+      HealthCheckGracePeriodSeconds: 120
+      TaskDefinition: !Ref TaskDefinition
+      LaunchType: EC2
+      LoadBalancers:
+        - ContainerName: !Ref Name
+          ContainerPort: 443
+          TargetGroupArn: !Ref TargetGroup
+      Tags:
+        - Key: WBS
+          Value: 'ACCESS CONECT 1.4'
+
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Family: !Ref Name
+      RequiresCompatibilities:
+        - !If [ Fargate, "FARGATE", "EC2" ]
+      Memory: !If [ Fargate, 4096, 3884 ]
+      Cpu: 2048
+      NetworkMode: !If [ Fargate, "awsvpc", "bridge" ]
+      TaskRoleArn: !Ref TaskRole
+      ExecutionRoleArn: !Ref TaskExecutionRole
+      ContainerDefinitions:
+        - Name: !Ref Name
+          Image: !Ref ContainerImageURI
+          Essential: true
+          Memory: !If [ Fargate, 4096, 3884 ]
+          PortMappings:
+            - ContainerPort: 443
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-region: !Ref AWS::Region
+              awslogs-group: !Ref LogGroup
+              awslogs-stream-prefix: !Ref Name
+      Tags:
+        - Key: WBS
+          Value: 'ACCESS CONECT 1.4'
+
+
+Outputs:
+  Service:
+    Value: !If [ Fargate, !Ref FargateService, !Ref EC2Service ]
