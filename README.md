@@ -732,11 +732,11 @@ Support](https://support.access-ci.org/user/login?destination=/open-a-ticket)
 asking for 2 new Duo Applications:
 
 ```
-Application 2
+Application 1
 Type: Web SDK
 Name idp.access-ci.org
 
-Application  1
+Application 2
 Type: Auth API
 Name: idp.access-ci.org ECP
 ```
