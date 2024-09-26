@@ -126,7 +126,7 @@ Resources:
       Family: !Ref Name
       RequiresCompatibilities:
         - !If [ Fargate, "FARGATE", "EC2" ]
-      Memory: !If [ Fargate, 4096, 3884 ]
+      Memory: !If [ Fargate, 4096, 6144 ]
       Cpu: 2048
       NetworkMode: !If [ Fargate, "awsvpc", "bridge" ]
       TaskRoleArn: !Ref TaskRole
@@ -135,7 +135,7 @@ Resources:
         - Name: !Ref Name
           Image: !Ref ContainerImageURI
           Essential: true
-          Memory: !If [ Fargate, 4096, 3884 ]
+          Memory: !If [ Fargate, 4096, 6144 ]
           PortMappings:
             - ContainerPort: 443
           LogConfiguration:
