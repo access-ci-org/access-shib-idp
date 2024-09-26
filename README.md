@@ -219,7 +219,7 @@ In particular the following stack resources typically require manual deletion.
 * DeploymentPipeline
   * Resources:
     * [ArtifactBucket](https://console.aws.amazon.com/s3/home)
-    * [ECRRepo](https://us-east-2.console.aws.amazon.com/ecr/repositories/?region=us-east-2)
+    * [ECRRepo](https://us-east-2.console.aws.amazon.com/ecr/private-registry/repositories?region=us-east-2)
 
 ---
 
