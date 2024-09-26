@@ -101,6 +101,7 @@ Resources:
           PropagateAtLaunch: true
         - Key: WBS
           Value: 'ACCESS CONECT 1.4'
+          PropagateAtLaunch: true
     CreationPolicy:
       ResourceSignal:
         Timeout: PT15M
