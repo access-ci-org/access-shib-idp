@@ -6,7 +6,7 @@
 [Shibboleth Identity Provider
 v5.x](https://shibboleth.atlassian.net/wiki/spaces/IDP5/overview) (IdP) hosted
 in
-[AWS](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
+[AWS](https://uiuc-access-cyberinfrastructure.signin.aws.amazon.com/console)
 (Amazon Web Services) infrastructure. The installation is achieved using an
 [AWS Reference Architecture for Shibboleth
 IdP](https://github.com/aws-samples/aws-refarch-shibboleth), which is a set
@@ -22,8 +22,8 @@ IdP secrets, see the [Initial Setup](#initial-setup) section below.
 ## Install the CloudFormation Stack
 
 Log in to the [AWS
-Console](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
-using your XSEDE/ACCESS IAM User account.
+Console](https://uiuc-access-cyberinfrastructure.signin.aws.amazon.com/console)
+using your ACCESS IAM User account.
 
 In the "Search for services" box at the top of the page, enter
 "[CloudFormation](https://us-east-2.console.aws.amazon.com/cloudformation/home?region=us-east-2)".
@@ -71,8 +71,8 @@ instances. After the CloudFormation stack deployment is complete, you need
 to update the ECS "desired task count" from 0 to 1.
 
 Log in to the [AWS
-Console](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
-using your XSEDE/ACCESS IAM User account.
+Console](https://uiuc-access-cyberinfrastructure.signin.aws.amazon.com/console)
+using your ACCESS IAM User account.
 
 In the "Search for services" box at the top of the page, enter
 "[Elastic Container
@@ -99,8 +99,8 @@ to test a specific instance, you simply need to add an entry in your local
 ### Find the Load Balancer DNS Name
 
 Log in to the [AWS
-Console](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
-using your XSEDE/ACCESS IAM User account.
+Console](https://uiuc-access-cyberinfrastructure.signin.aws.amazon.com/console)
+using your ACCESS IAM User account.
 
 In the "Search for services" box at the top of the page, enter
 "[CloudFormation](https://us-east-2.console.aws.amazon.com/cloudformation/home?region=us-east-2)".
@@ -177,8 +177,8 @@ which points to `idp.dyn-access-ci.org`. The `dyn-access-ci.org` domain
 name is managed by AWS Route 53.
 
 Log in to the [AWS
-Console](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
-using your XSEDE/ACCESS IAM User account.
+Console](https://uiuc-access-cyberinfrastructure.signin.aws.amazon.com/console)
+using your ACCESS IAM User account.
 
 In the "Search for services" box at the top of the page, enter
 "[Route 53](https://us-east-1.console.aws.amazon.com/route53)".
@@ -251,8 +251,8 @@ steps:
 The build pipeline and Shibboleth IdP software use CloudWatch for logging.
 
 Log in to the [AWS
-Console](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
-using your XSEDE/ACCESS IAM User account.
+Console](https://uiuc-access-cyberinfrastructure.signin.aws.amazon.com/console)
+using your ACCESS IAM User account.
 
 In the "Search for services" box at the top of the page, enter
 "[CloudWatch](https://us-east-2.console.aws.amazon.com/cloudwatch/home?region=us-east-2)".
@@ -268,8 +268,8 @@ There are two logs associated with the deployment:
 ## Restart the Service
 
 Log in to the [AWS
-Console](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
-using your XSEDE/ACCESS IAM User account.
+Console](https://uiuc-access-cyberinfrastructure.signin.aws.amazon.com/console)
+using your ACCESS IAM User account.
 
 In the "Search for services" box at the top of the page, enter
 "[Elastic Container
@@ -316,8 +316,8 @@ Commands](#aws-cli-commands) below for a command line version of downloading
 the `idp_acess-ci_org.key` file.)
 
 Log in to the [AWS
-Console](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
-using your XSEDE/ACCESS IAM User account.
+Console](https://uiuc-access-cyberinfrastructure.signin.aws.amazon.com/console)
+using your ACCESS IAM User account.
 
 In the "Search for services" box at the top of the page, enter "[Certificate
 Manager](https://us-east-2.console.aws.amazon.com/acm/home?region=us-east-2)".
@@ -351,7 +351,7 @@ IdP is deployed.
 
 In order to work with AWS, you must first have an AWS account which enables
 you to log in to the [AWS
-Console](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console).
+Console](https://uiuc-access-cyberinfrastructure.signin.aws.amazon.com/console).
 The account should be an IAM User
 account with AdministratorAccess permissions. This will allow you to create
 additional login credentials for deploying the CloudFormation stack and
@@ -377,8 +377,8 @@ To run the `aws` command, you will need an AWS Access Key ID and AWS Secret
 Access Key.
 
 Log in to the [AWS
-Console](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
-using your XSEDE/ACCESS IAM User account.
+Console](https://uiuc-access-cyberinfrastructure.signin.aws.amazon.com/console)
+using your ACCESS IAM User account.
 
 In the "Search for services" box at the top of the page, enter
 "[IAM](https://us-east-1.console.aws.amazon.com/iamv2)". In the
@@ -508,8 +508,8 @@ lines) since it is a root CA already present in web browers.
 For this step, you will need three of the files from the previous step.
 
 Log in to the [AWS
-Console](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
-using your XSEDE/ACCESS IAM User account.
+Console](https://uiuc-access-cyberinfrastructure.signin.aws.amazon.com/console)
+using your ACCESS IAM User account.
 
 In the "Search for services" box at the top of the page, enter "[Certificate
 Manager](https://us-east-2.console.aws.amazon.com/acm/home?region=us-east-2)".
@@ -830,8 +830,8 @@ ARNs for the certificates and secrets uploaded to the AWS Secrets Manager
 above.
 
 Log in to the [AWS
-Console](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
-using your XSEDE/ACCESS IAM User account.
+Console](https://uiuc-access-cyberinfrastructure.signin.aws.amazon.com/console)
+using your ACCESS IAM User account.
 
 In the "Search for services" box at the top of the page, enter "[S3](https://s3.console.aws.amazon.com/s3/home?region=us-east-2)".
 
@@ -1053,8 +1053,8 @@ make changes, and push the changes to the repo. This will trigger a new
 Deployment Pipeline build/deploy.
 
 To clone the repo, log in to the [AWS
-Console](https://uiuc-xsede-cyberinfrastructure.signin.aws.amazon.com/console)
-using your XSEDE/ACCESS IAM User account.
+Console](https://uiuc-access-cyberinfrastructure.signin.aws.amazon.com/console)
+using your ACCESS IAM User account.
 
 In the "Search for services" box at the top of the page, enter
 "[IAM](https://us-east-1.console.aws.amazon.com/iamv2)". In the
