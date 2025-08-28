@@ -127,25 +127,6 @@ Add one of the IP addresses to your local `/etc/hosts` file. Example:
 Remember to remove this extra line from your local `/etc/hosts` file once
 you are finished testing.
 
-### Test ECP Login
-
-You must test ECP (command line) access in order to verify Duo MFA works
-with both ECP and web-based clients. ECP testing is performed with the
-https://cilogon.org/ecp.pl script. Example:
-
-```
-wget https://cilogon.org/ecp.pl
-perl ecp.pl --proxyfile --idpname access --certreq create --lifetime 12
-    Enter a username for the Identity Provider: <ACCESS Kerberos username>
-    Enter a password for the Identity Provider: <ACCESS Kerberos password>
-    <You will be prompted to approve an automatic Duo Push.>
-
-openssl x509 -noout -subject -issuer -enddate -in "/tmp/x509up_u${UID}"
-    subject= /DC=org/DC=cilogon/C=US/O=ACCESS/CN=ACCESS User A12345
-    issuer= /DC=org/DC=cilogon/C=US/O=CILogon/CN=CILogon Silver CA 1
-    notAfter=Oct 26 04:41:37 2020 GMT
-```
-
 ### Test Web Login
 
 Go to https://cilogon.org/testidp/ (preferrably using a single
@@ -163,7 +144,7 @@ instances from 1 to 2. This will provide load balancing and fail-over in
 case of failure of one of the service instances. See
 [Update the Number of Running
 Instances](#update-the-number-of-running-instances) above for instructions
-on how to do this. It's also a good idea to retest ECP and web browser
+on how to do this. It's also a good idea to retest web browser
 login using all of the various IP addresses for the
 [LoadBalancerDNSName](find-the-load-balancer-dns-name).
 
@@ -236,9 +217,9 @@ steps:
    [CloudFormation](https://us-east-2.console.aws.amazon.com/cloudformation/home?region=us-east-2)
    stack with an unused number.
 3. Increase the number of running instances to '1'.
-4. Test the new stack for both ECP and web browser.
+4. Test the new stack for web browser.
 5. Increase the number of running instances to '2'.
-6. Test the stack again to make sure ECP works with both instances.
+6. Test the stack again to make sure things work with both instances.
 7. Update DNS to point to the new stack.
 8. Delete the previous CloudFormation stack.
 
@@ -724,35 +705,21 @@ This will be used as the default value in the
 
 ## Obtain Duo Application Secrets
 
-The IdP uses Duo as a second authentication factor. Several new
-Duo "Applications" must be created and the resulting keys uploaded to AWS.
+The IdP uses Duo as a second authentication factor. A new
+Duo "Application" must be created and the resulting key uploaded to AWS.
 
 Submit a request at [ACCESS
 Support](https://support.access-ci.org/user/login?destination=/open-a-ticket)
-asking for 2 new Duo Applications:
+asking for a new Duo Applications:
 
 ```
-Application 1
+Application
 Type: Web SDK
 Name idp.access-ci.org
-
-Application 2
-Type: Auth API
-Name: idp.access-ci.org ECP
 ```
 
-These should be configured similarly to the existing idp.xsede.org
-Applications.
-
-Next, generate an [application
-keys](https://duo.com/docs/duoweb-v2#1.-generate-an-akey) for the
-non-browser (ECP) flow. This is a value that is kept secret from Duo
-and should be at least 40 characters long.
-
-```
-export E_APP_KEY=$(openssl rand -hex 20)
-echo "ecp_app_key = ${E_APP_KEY}"
-```
+This should be configured similarly to the existing idp.xsede.org
+Application.
 
 Record the resulting secrets/keys in a text file `ACCESS-Duo.txt`. (Note
 that the values below are not the actual keys.)
@@ -762,12 +729,6 @@ idp.access-ci.org (Web SDK)
 oidc_int_key = FGHIJKLMNOPQRSTUVWXY
 oidc_sec_key = pqrstuvwxyz0123456789010abcdefghijklmnop
 oidc_api_host = api-12345678.duosecurity.com
-
-idp.access-ci.org ECP (Auth API)
-ecp_app_key = bcdefghijklmnopqrstuvwxyz0123456789abcde
-ecp_int_key = EFGHIJKLMNOPQRSTUVWX
-ecp_sec_key = 7890101abcdefghijklmnopqrstuvwxyz0123456
-ecp_api_host = api-12345678.duosecurity.com
 ```
 
 ## Upload the Duo Application Secrets to AWS Secrets Manager
@@ -777,9 +738,6 @@ upload them to the AWS Secrets Manager.
 
 ```
 export SECRETPREFIX=idp-access-ci-org
-export E_APP=$(grep "^ecp_app_key" ACCESS-Duo.txt | sed -e 's/.* = //')
-export E_INT=$(grep "^ecp_int_key" ACCESS-Duo.txt | sed -e 's/.* = //')
-export E_SEC=$(grep "^ecp_sec_key" ACCESS-Duo.txt | sed -e 's/.* = //')
 export O_INT=$(grep "^oidc_int_key" ACCESS-Duo.txt | sed -e 's/.* = //')
 export O_SEC=$(grep "^oidc_sec_key" ACCESS-Duo.txt | sed -e 's/.* = //')
 aws secretsmanager create-secret \
@@ -787,7 +745,7 @@ aws secretsmanager create-secret \
     --description "The keys for Duo MFA" \
     --tags '[{"Key":"WBS","Value":"ACCESS CONECT 1.4"}]' \
     --secret-string \
-    '"ecp_app_key":"'"${E_APP}"'","ecp_int_key":"'"${E_INT}"'","ecp_sec_key":"'"${E_SEC}"'","oidc_int_key":"'"${O_INT}"'","oidc_sec_key":"'"${O_SEC}"'"}'
+    "oidc_int_key":"'"${O_INT}"'","oidc_sec_key":"'"${O_SEC}"'"}'
 ```
 
 After the Duo secrets are uploaded, note the ARN (AWS Registration Number).

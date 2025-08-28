@@ -103,14 +103,8 @@ RUN salt_settings=`aws --region "${AWS_DEFAULT_REGION}" secretsmanager get-secre
 
 # Grab Duo client_secrets from the secrets manager
 RUN duo_settings=`aws --region "${AWS_DEFAULT_REGION}" secretsmanager get-secret-value --secret-id "${SECRETS_MANAGER_DUO_SETTINGS_ARN}" --query 'SecretString' | sed -e 's/^"//' -e 's/"$//'` && \
-    ecp_app_key=$(echo $duo_settings | sed -e 's/\\"/"/g' | jq '.ecp_app_key' | sed -e 's/^"//' -e 's/"$//') && \
-    ecp_int_key=$(echo $duo_settings | sed -e 's/\\"/"/g' | jq '.ecp_int_key' | sed -e 's/^"//' -e 's/"$//') && \
-    ecp_sec_key=$(echo $duo_settings | sed -e 's/\\"/"/g' | jq '.ecp_sec_key' | sed -e 's/^"//' -e 's/"$//') && \
     oidc_int_key=$(echo $duo_settings | sed -e 's/\\"/"/g' | jq '.oidc_int_key' | sed -e 's/^"//' -e 's/"$//') && \
     oidc_sec_key=$(echo $duo_settings | sed -e 's/\\"/"/g' | jq '.oidc_sec_key' | sed -e 's/^"//' -e 's/"$//') && \
-    sed -i "s|XXXX-ECPApplicationKey-XXXX|$ecp_app_key|g" /opt/shibboleth-idp/conf/authn/duo.properties && \
-    sed -i "s|XXXX-ECPIntegrationKey-XXXX|$ecp_int_key|g" /opt/shibboleth-idp/conf/authn/duo.properties && \
-    sed -i "s|XXXX-ECPSecretKey-XXXX|$ecp_sec_key|g" /opt/shibboleth-idp/conf/authn/duo.properties && \
     sed -i "s|XXXX-OIDCIntegrationKey-XXXX|$oidc_int_key|g" /opt/shibboleth-idp/conf/authn/duo.properties && \
     sed -i "s|XXXX-OIDCSecretKey-XXXX|$oidc_sec_key|g" /opt/shibboleth-idp/conf/authn/duo.properties
 
