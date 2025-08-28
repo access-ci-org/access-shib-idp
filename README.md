@@ -48,7 +48,7 @@ stack and 5 stacks for Cluster, DeploymentPipeline, LoadBalancer, Service,
 and VPC. It can take up to 10 minutes for the root stack to show
 `CREATE_COMPLETE` in the stack list.
 
-**But wait! It's not done yet!** After the `access-idp-N` stack shows
+⚠️ **But wait! It's not done yet!** ⚠️ After the `access-idp-N` stack shows
 `CREATE_COMPLETE`, the Docker image might not yet be built. To check the
 progress of the Docker image build, click on the main
 `access-idp-N` stack, then click the "Outputs" tab.
