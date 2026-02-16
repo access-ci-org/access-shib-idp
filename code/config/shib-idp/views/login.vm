@@ -34,6 +34,8 @@
         <title>#springMessageText("idp.title", "Web Login Service")</title>
         <link rel="stylesheet" type="text/css" href="$request.getContextPath()/css/main.css">
         <link rel="shortcut icon" href="https://idp.access-ci.org/idp/images/favicon.ico">
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js" type="text/javascript"></script>
+        <script src="$request.getContextPath()/js/lower.js" type="text/javascript"></script>
     </head>
     <body onload="document.getElementById('username').focus()">
     <div id="universal-menus" style="min-height:48px"></div>
@@ -70,8 +72,9 @@
             #if ($passwordEnabled)
               <div class="form-element-wrapper">
                 <label for="username">#springMessageText("idp.login.username", "Username")</label>
-                <input class="form-element form-field" id="username" name="j_username" type="text"
-                    value="#if($username)$encoder.encodeForHTML($username)#end" />
+                <input class="form-element form-field lower" id="username" name="j_username" type="text"
+                    value="#if($username)$encoder.encodeForHTML($username)#end"
+                    oninput="lowerCaseF(this)"/>
               </div>
 
               <div class="form-element-wrapper">
