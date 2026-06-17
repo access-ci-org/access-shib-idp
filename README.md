@@ -398,7 +398,7 @@ On the "Request public certificate" page, enter the following information:
 * Allow export: **Disable export**
 * Validation method: **DNS validation - recommended**
 * Key algorithm: **RSA 2048**
-* Tags: **Add new tag*
+* Tags: *Add new tag*
     * Key: **WBS**
     * Value: **ACCESS CONECT 1.4**
 
@@ -414,7 +414,8 @@ this certificates requires adding a DNS entry for idp.access-ci.org. So [open
 a help ticket](https://support.access-ci.org/help-ticket) and select "I have
 another question" with the following information:
 
-Reuqest type: Internal ACCESS and Resource Provider Request
+```
+Request type : Internal ACCESS and Resource Provider Request
 Request title: Add DNS entry for idp.access-ci.org
 ACCESS Operational Support Issues: Operations Infrastructure
 Description:
@@ -422,14 +423,15 @@ Description:
     validation of TLS certificates.
     Domain: idp.access-ci.org
     Type: CNAME
-    CNAME Name: \<copy the CNAME name from the web page\>
-    CNAME Value: \<copy the CNAME value from the web page\>
-Priority: Medium
+    CNAME Name : <copy the CNAME name from the web page>
+    CNAME Value: <copy the CNAME value from the web page>
+Priority           : Medium
 Infrastructure Type: ACCESS Project Service
-ACCESS Project: Operations
+ACCESS Project     : Operations
+```
 
-Then wait until someone adds the new entry to DNS. Then you can revisit the
-certificate status page to see if the Status is Active.
+Then wait until someone from NCSA NetEng adds the new entry to DNS. Then you
+can revisit the certificate status page to see if the Status is Active.
 
 **NOTE:** [idp.access-ci.org](https://idp.access-ci.org/idp) previously used
 an [InCommon SSL/TLS certificate](old-incommon-cert.md) for the `https://`
