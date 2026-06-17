@@ -23,9 +23,9 @@ Parameters:
 
   CertificateARN:
     Type: String
-    Default: 'arn:aws:acm:us-east-2:548855480644:certificate/dd13c853-5d6f-4ef2-903c-6007eee3fb47'
+    Default: 'arn:aws:acm:us-east-2:548855480644:certificate/86256334-18a1-4430-96c0-71f53007060b'
     Description: >
-      The Certificates ARN of the SSL certificate to be used on HTTPS connection
+      The Certificates ARN of the SSL/TLS certificate to be used on HTTPS connection
 
   SigningARN:
     Type: String
