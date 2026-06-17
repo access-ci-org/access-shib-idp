@@ -155,6 +155,16 @@ new idp.access-ci.org certificate. This will be used as the default value
 in the
 [access-ci-aws-shibboleth-idp.yaml](https://s3.console.aws.amazon.com/s3/object/access-idp-templates?region=us-east-2&prefix=access-ci-aws-shibboleth-idp.yaml) file.
 
+### Uploading Key for SSL/TLS Cert
+
+```
+export KEY=$(sed -z  's/\n/\\n/g' idp_access-ci_org.key)
+aws secretsmanager create-secret \
+    --name "${SECRETPREFIX}-ssl-key" \
+    --description "Key for SSL/TLS certificate for idp.access-ci.org" \
+    --tags '[{"Key":"WBS","Value":"ACCESS CONECT 1.4"}]' \
+    --secret-string '{"key":"'"${KEY}"'"}'
+```
 
 ## Downloading `idp_access-ci_org.key` File for Updating the SSL/TLS Certificate
 
@@ -164,12 +174,4 @@ aws secretsmanager get-secret-value --secret-id idp-access-ci-org-ssl-key |
     jq -r '.key' > idp_access-ci_org.key
 ```
 
-## AWS CLI Commands
-
-export KEY=$(sed -z  's/\n/\\n/g' idp_access-ci_org.key)
-aws secretsmanager create-secret \
-    --name "${SECRETPREFIX}-ssl-key" \
-    --description "Key for SSL/TLS certificate for idp.access-ci.org" \
-    --tags '[{"Key":"WBS","Value":"ACCESS CONECT 1.4"}]' \
-    --secret-string '{"key":"'"${KEY}"'"}'
 
