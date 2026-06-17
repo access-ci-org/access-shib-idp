@@ -155,7 +155,7 @@ new idp.access-ci.org certificate. This will be used as the default value
 in the
 [access-ci-aws-shibboleth-idp.yaml](https://s3.console.aws.amazon.com/s3/object/access-idp-templates?region=us-east-2&prefix=access-ci-aws-shibboleth-idp.yaml) file.
 
-### Uploading Key for SSL/TLS Cert
+## Uploading Key for SSL/TLS Cert to Secrets Manager
 
 ```
 export KEY=$(sed -z  's/\n/\\n/g' idp_access-ci_org.key)
