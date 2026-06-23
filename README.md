@@ -59,6 +59,23 @@ Build will probably still be in progress. Click "Details" to view the
 progress. Build takes the longest, but Deploy can also take a couple of
 minutes.
 
+:warning: :warning: :warning: If the Build phase fails, it's possible that you
+have hit the Docker Hub pull rate limit. To verify the error message, click
+the "Build" phase box, then click the "Link to execution details" link in the
+"Execution summary" box below. In the new "Build status" window, look for red
+text indicating an error. Just before the error message, look for a message
+like this:
+
+```
+Step 1/32 : FROM i2incommon/shib-idp:latest5
+latest5: Pulling from i2incommon/shib-idp
+toomanyrequests: You have reached your unauthenticated pull rate limit. https://www.docker.com/increase-rate-limit
+```
+
+In this case, wait a few minutes, then click the "Retry stage" (circle-arrow)
+icon in the "Build" phase box. If you are lucky, the image will build this
+time.
+
 **Note**: the rest of the installation instructions below assume the
 CloudFormation stack created is named `access-idp-1`.
 
